@@ -202,6 +202,25 @@ so101 train --dataset.video_backend=pyav
 Ubuntu-based distributions (Linux Mint, Pop!_OS, Kubuntu, …) behave like the Ubuntu release they are
 based on; the installer only prints a warning for them.
 
+## What this changes on the system
+
+Never touched: NVIDIA/GPU drivers, the kernel, the system Python and its packages, `apt upgrade`,
+boot or display settings. Everything Python lives in `./.venv`.
+
+The only changes outside this folder:
+
+| Change | Undo |
+|--------|------|
+| apt installs git, curl, ffmpeg, build tools, libav*-dev, libevdev-dev, v4l-utils (adds packages, upgrades nothing else) | `sudo apt remove <pkg>` |
+| `uv` binary in `~/.local/bin`, its Python 3.12 in `~/.local/share/uv/python` (shell profile is not edited) | `rm ~/.local/bin/uv ~/.local/bin/uvx; rm -rf ~/.local/share/uv` |
+| `~/.local/bin/so101` symlink | `./uninstall.sh` |
+| User added to the `dialout` group | `sudo gpasswd -d $USER dialout` |
+| `/etc/udev/rules.d/99-so101-serial.rules` (and `99-so101-names.rules` if you run `bind-ports`) | `./uninstall.sh --udev` |
+| `brltty` removed, **only if you answer yes** at the prompt | `sudo apt install brltty` |
+| Download caches: `~/.cache/uv`, datasets/calibration in `~/.cache/huggingface` | delete the folders |
+
+Skip the system-level parts with `./install.sh --no-apt --no-serial`.
+
 ## Uninstall
 
 ```bash

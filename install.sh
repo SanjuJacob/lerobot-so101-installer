@@ -118,7 +118,8 @@ fi
 step "Ensuring 'uv' is available"
 export PATH="$HOME/.local/bin:$PATH"
 if ! command -v uv >/dev/null 2>&1; then
-    curl -LsSf https://astral.sh/uv/install.sh | sh
+    # UV_NO_MODIFY_PATH: do not edit ~/.bashrc / ~/.profile (Ubuntu already puts ~/.local/bin on PATH)
+    curl -LsSf https://astral.sh/uv/install.sh | env UV_NO_MODIFY_PATH=1 sh
     export PATH="$HOME/.local/bin:$PATH"
 fi
 command -v uv >/dev/null 2>&1 || die "uv installation failed."
