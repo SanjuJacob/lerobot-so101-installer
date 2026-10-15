@@ -174,6 +174,34 @@ each machine keeps its own settings.
 | Video encoding errors | `ffmpeg -encoders | grep svtav1`; Ubuntu's ffmpeg works with TorchCodec ≥ 0.10 (torch ≥ 2.10) |
 | Build errors while installing | `./install.sh` again (apt step installs cmake, build-essential, libav*-dev) |
 
+## 7. Other Ubuntu versions
+
+The installer does not depend on the Ubuntu Python: it brings its own Python 3.12 via `uv`, and the
+apt packages it uses exist on every current release. What differs between releases is the glibc
+version (PyTorch wheels need ≥ 2.28) and the system ffmpeg that TorchCodec loads to decode videos.
+
+| Ubuntu | Status | Notes |
+|--------|--------|-------|
+| 24.04 LTS | target, works | ffmpeg 6.1 |
+| 22.04 LTS | should work | ffmpeg 4.4; run `so101 check` |
+| 24.10 / 25.x / 26.04 | should work | newer ffmpeg (7.x/8.x), supported by recent TorchCodec |
+| 20.04 LTS | probably works, not recommended | out of standard support; ffmpeg 4.2 is the oldest TorchCodec accepts |
+| 18.04 and older | **does not work** | glibc 2.27 is too old for current PyTorch wheels |
+
+Also required on any version: an x86_64 CPU (ARM / Jetson needs a different torch build), and for
+GPU training an NVIDIA driver ≥ 570. Without a GPU everything except fast training still works.
+
+`so101 check` encodes and decodes a short test video, so it tells you right away whether recording and
+dataset loading work on that machine. If only the **decode** test fails (system ffmpeg too old or too
+new for TorchCodec), use the PyAV decoder, which ships its own ffmpeg:
+
+```bash
+so101 train --dataset.video_backend=pyav
+```
+
+Ubuntu-based distributions (Linux Mint, Pop!_OS, Kubuntu, …) behave like the Ubuntu release they are
+based on; the installer only prints a warning for them.
+
 ## Uninstall
 
 ```bash

@@ -72,23 +72,58 @@ for mod, label in [
     except Exception as e:  # noqa: BLE001
         report(False, label, repr(e))
 
-try:
-    import torchcodec  # noqa: F401
-    from torchcodec.decoders import VideoDecoder  # noqa: F401
-
-    report(True, "torchcodec (video decoding)", getattr(torchcodec, "__version__", ""))
-except Exception as e:  # noqa: BLE001
-    report(False, "torchcodec (video decoding)", repr(e))
-
-# --- ffmpeg -------------------------------------------------------------------
+# --- Video: encode with PyAV (bundled ffmpeg), decode with TorchCodec ---------
+# Recording encodes through PyAV, which ships its own ffmpeg. Decoding (training,
+# replay) goes through TorchCodec, which loads the *system* ffmpeg libraries -
+# that is the part that differs between Ubuntu releases, so test it for real.
 ffmpeg = shutil.which("ffmpeg")
-report(ffmpeg is not None, "ffmpeg on PATH", ffmpeg or "missing (sudo apt install ffmpeg)")
 if ffmpeg:
-    enc = subprocess.run([ffmpeg, "-hide_banner", "-encoders"], capture_output=True, text=True).stdout
-    if "libsvtav1" in enc:
-        report(True, "ffmpeg has libsvtav1 encoder")
-    else:
-        warn("ffmpeg lacks libsvtav1", "recording will fall back to another codec")
+    first = subprocess.run([ffmpeg, "-version"], capture_output=True, text=True).stdout.splitlines()
+    print(f"       System {first[0] if first else 'ffmpeg'}")
+else:
+    warn("ffmpeg not on PATH", "sudo apt install ffmpeg")
+
+try:
+    import tempfile
+
+    import av
+    import numpy as np
+
+    codec = "libsvtav1"
+    try:
+        av.codec.Codec(codec, "w")
+    except Exception:  # noqa: BLE001
+        codec = "libx264"
+    report(True, "PyAV encoder for recording", f"av {av.__version__}, {codec}")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "test.mp4")
+        with av.open(path, "w") as container:
+            stream = container.add_stream(codec, rate=30)
+            stream.width, stream.height, stream.pix_fmt = 64, 64, "yuv420p"
+            for i in range(10):
+                img = np.full((64, 64, 3), i * 20, dtype=np.uint8)
+                for packet in stream.encode(av.VideoFrame.from_ndarray(img, format="rgb24")):
+                    container.mux(packet)
+            for packet in stream.encode():
+                container.mux(packet)
+        report(True, "Video encode test (PyAV)")
+
+        try:
+            import torchcodec
+            from torchcodec.decoders import VideoDecoder
+
+            frames = VideoDecoder(path).get_frames_in_range(0, 5)
+            report(frames.data.shape[0] == 5, "Video decode test (torchcodec + system ffmpeg)",
+                   getattr(torchcodec, "__version__", ""))
+        except ImportError as e:
+            report(False, "torchcodec import", repr(e)[:300])
+        except Exception as e:  # noqa: BLE001
+            report(False, "Video decode test (torchcodec + system ffmpeg)", repr(e)[:300])
+            print("       -> the system ffmpeg version is not supported by this torchcodec;"
+                  " see README 'Other Ubuntu versions'")
+except Exception as e:  # noqa: BLE001
+    report(False, "Video encode test (PyAV)", repr(e)[:300])
 
 # --- CLI entry points -------------------------------------------------------
 for exe in ["lerobot-find-port", "lerobot-setup-motors", "lerobot-calibrate",
