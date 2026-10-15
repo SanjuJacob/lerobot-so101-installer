@@ -174,20 +174,7 @@ if [[ $SKIP_SERIAL -eq 0 ]]; then
     ASSUME_YES=$ASSUME_YES bash "$REPO_DIR/scripts/setup_serial.sh"
 fi
 
-# ---- 8. Config + CLI shortcut ------------------------------------------------
-step "Setting up config and the 'so101' command"
-if [[ ! -f "$REPO_DIR/config/so101.env" ]]; then
-    cp "$REPO_DIR/config/so101.env.example" "$REPO_DIR/config/so101.env"
-    ok "Created config/so101.env - edit it with your ports/ids/cameras."
-else
-    ok "config/so101.env already exists - left untouched."
-fi
-chmod +x "$REPO_DIR/so101" "$REPO_DIR"/scripts/*.sh
-mkdir -p "$HOME/.local/bin"
-ln -sf "$REPO_DIR/so101" "$HOME/.local/bin/so101"
-ok "Linked ~/.local/bin/so101 -> $REPO_DIR/so101"
-
-# ---- 9. Verify -----------------------------------------------------------------
+# ---- 8. Verify -----------------------------------------------------------------
 if [[ $SKIP_VERIFY -eq 0 ]]; then
     step "Verifying the environment"
     "$VENV_PY" "$REPO_DIR/scripts/check_env.py" || warn "Some checks failed - see above."
@@ -197,14 +184,13 @@ cat <<EOF
 
 ${c_grn}Installation finished.${c_off}
 
-  Activate the env in a shell:   source $REPO_DIR/activate.sh
-  Or use the wrapper directly:   so101 help
+Activate the environment in every new terminal:
 
-Next steps (see README.md):
-  1. so101 find-port              -> put the ports into config/so101.env
-  2. so101 setup-follower / setup-leader
-  3. so101 calibrate-follower / calibrate-leader
-  4. so101 teleop
+  source $REPO_DIR/activate.sh
+
+Then use the LeRobot commands (see README.md), e.g.:
+  lerobot-find-port
+  lerobot-setup-motors --robot.type=so101_follower --robot.port=/dev/ttyACM0
 
 If you were just added to the 'dialout' group, log out and back in once.
 EOF

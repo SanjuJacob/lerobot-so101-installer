@@ -1,7 +1,7 @@
 """Sanity-check the LeRobot / SO-101 environment.
 
 Run with the venv's interpreter:  .venv/bin/python scripts/check_env.py
-(or simply:  so101 check)
+(or, with the venv active:  python scripts/check_env.py)
 """
 
 import glob
@@ -121,7 +121,7 @@ try:
         except Exception as e:  # noqa: BLE001
             report(False, "Video decode test (torchcodec + system ffmpeg)", repr(e)[:300])
             print("       -> the system ffmpeg version is not supported by this torchcodec;"
-                  " see README 'Other Ubuntu versions'")
+                  " see README 'Compatibility'")
 except Exception as e:  # noqa: BLE001
     report(False, "Video encode test (PyAV)", repr(e)[:300])
 
@@ -132,7 +132,7 @@ for exe in ["lerobot-find-port", "lerobot-setup-motors", "lerobot-calibrate",
     report(os.path.isfile(path), f"{exe}", path if os.path.isfile(path) else "not found in venv")
 
 # --- Hardware (informational) -------------------------------------------------
-ports = sorted(glob.glob("/dev/ttyACM*") + glob.glob("/dev/ttyUSB*") + glob.glob("/dev/so101_*"))
+ports = sorted(glob.glob("/dev/ttyACM*") + glob.glob("/dev/ttyUSB*"))
 print(f"       Serial ports: {', '.join(ports) if ports else 'none (arms not plugged in?)'}")
 cams = sorted(glob.glob("/dev/video*"))
 print(f"       Video devices: {', '.join(cams) if cams else 'none'}")

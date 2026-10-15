@@ -1,0 +1,29 @@
+LeRobot SO-101 Installer for Ubuntu
+
+This repository contains installation scripts only. It does not include or
+redistribute the source code of LeRobot or any other third-party project.
+LeRobot is downloaded from https://github.com/huggingface/lerobot at install
+time and remains under its own license (Apache License 2.0).
+
+The installation steps automated by these scripts, and the example commands in
+README.md, are based on and adapted from the official LeRobot documentation,
+Copyright Hugging Face, Inc.:
+
+  - https://huggingface.co/docs/lerobot/main/en/installation
+  - https://huggingface.co/docs/lerobot/en/so101
+  - https://huggingface.co/docs/lerobot/en/il_robots
+
+Third-party software installed by the scripts (each under its own license):
+
+  - LeRobot (Hugging Face)          https://github.com/huggingface/lerobot
+  - PyTorch                         https://pytorch.org
+  - uv (Astral)                     https://github.com/astral-sh/uv
+  - Feetech servo SDK               https://pypi.org/project/feetech-servo-sdk/
+  - Ubuntu packages installed via apt (ffmpeg, build tools, etc.)
+
+SO-ARM100 / SO-101 hardware design by The Robot Studio:
+  https://github.com/TheRobotStudio/SO-ARM100
+
+LeRobot, Hugging Face, SO-101 and other product names are trademarks or names
+of their respective owners. This project is not affiliated with or endorsed by
+Hugging Face, Inc. or The Robot Studio.
