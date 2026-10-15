@@ -7,7 +7,7 @@
 ![CUDA](https://img.shields.io/badge/CUDA-12.8%20%7C%2013.0-76B900?logo=nvidia&logoColor=white)
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/lerobot-so101-installer.git
+git clone https://github.com/SanjuJacob/lerobot-so101-installer.git
 cd lerobot-so101-installer
 ./install.sh
 source activate.sh
@@ -73,7 +73,7 @@ The installer only checks the driver version; it does not install or modify driv
 ## Installation
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/lerobot-so101-installer.git
+git clone https://github.com/SanjuJacob/lerobot-so101-installer.git
 cd lerobot-so101-installer
 ./install.sh
 ```
