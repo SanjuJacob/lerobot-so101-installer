@@ -106,6 +106,8 @@ if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi >/dev/null 2>&1; then
     if (( drv_major < 570 )); then
         warn "Driver $drv is too old for the CUDA 12.8 PyTorch wheels (need >= 570.86)."
         warn "RTX 50xx needs the *open* kernel module: sudo ubuntu-drivers install  (or nvidia-driver-580-open)"
+    elif (( drv_major >= 580 )) && [[ -z "$TORCH_BACKEND" ]]; then
+        ok "Driver supports CUDA 12.8 (default) and 13.x wheels; pass --torch cu130 to use CUDA 13.0 torch."
     fi
 else
     warn "nvidia-smi not working: no NVIDIA driver loaded. PyTorch will run on CPU only."

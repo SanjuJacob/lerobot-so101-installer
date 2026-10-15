@@ -33,6 +33,9 @@ sudo reboot
 > If Secure Boot is on, you will be asked to enroll a MOK key at the next boot.
 
 The CUDA toolkit is **not** needed: PyTorch ships its own CUDA runtime.
+The "CUDA Version" shown by `nvidia-smi` (e.g. 13.2 with driver 595) is only the *highest* CUDA version
+the driver supports, not something installed. Such a driver runs the default CUDA 12.8 PyTorch wheels
+as well as `--torch cu130`.
 
 ## 2. Install
 
