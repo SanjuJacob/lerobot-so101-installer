@@ -30,7 +30,6 @@ so101 train
 - [Why this exists](#why-this-exists)
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [Is it safe for my system?](#is-it-safe-for-my-system)
 - [Using it](#using-it)
 - [Command reference](#command-reference)
 - [Configuration](#configuration)
@@ -116,31 +115,6 @@ so101 check
 
 Re-running `./install.sh` is safe: it reuses the environment and updates LeRobot.
 </details>
-
-## Is it safe for my system?
-
-Yes. **Never touched:** GPU drivers, the kernel, the system Python and its packages, boot/display settings. It never runs `apt upgrade`. All Python packages, including PyTorch's CUDA libraries, live inside `./.venv`, and deleting that folder removes them completely.
-
-The only changes outside this folder, each one reversible:
-
-| Change | Why | How to undo |
-|--------|-----|-------------|
-| apt packages: git, curl, ffmpeg, build-essential, cmake, pkg-config, libav\*-dev, libevdev-dev, v4l-utils | video, building packages, cameras | `sudo apt remove <package>` |
-| `uv` in `~/.local/bin`, its Python in `~/.local/share/uv` (your `.bashrc` is not edited) | creates the isolated environment | `rm ~/.local/bin/uv ~/.local/bin/uvx && rm -rf ~/.local/share/uv` |
-| `~/.local/bin/so101` link | the wrapper command | `./uninstall.sh` |
-| your user added to `dialout` | permission to use USB serial ports | `sudo gpasswd -d $USER dialout` |
-| `/etc/udev/rules.d/99-so101-serial.rules` | access to the motor boards (USB vendor `1a86` only) | `./uninstall.sh --udev` |
-| `brltty` removed, **only if you answer yes** | this braille service hijacks the arm's USB adapter | `sudo apt install brltty` |
-
-Want even less? `./install.sh --no-apt --no-serial` touches only this folder and `~/.local`.
-
-To double-check that apt won't touch any NVIDIA package, do a dry run first:
-
-```bash
-sudo apt-get install -s ffmpeg build-essential cmake pkg-config libavformat-dev libavcodec-dev \
-  libavdevice-dev libavutil-dev libswscale-dev libswresample-dev libavfilter-dev \
-  libevdev-dev v4l-utils | grep -i nvidia     # no output = nothing NVIDIA-related changes
-```
 
 ## Using it
 
