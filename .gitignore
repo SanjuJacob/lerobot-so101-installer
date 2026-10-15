@@ -1,0 +1,11 @@
+# created by install.sh
+.venv/
+lerobot/
+config/so101.env
+
+# training / recording outputs
+outputs/
+wandb/
+
+__pycache__/
+*.pyc
